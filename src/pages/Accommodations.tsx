@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -9,7 +8,7 @@ import { useToast } from '@/components/ui/use-toast';
 
 const roomAmenities = [
   { name: "Spacious Wardrobe & Extra Storage Space", icon: "📦" },
-  { name: "AC & NON AC Rooms", icon: "❄️" },
+  { name: "AC Rooms", icon: "❄️" },
   { name: "Bed With Comfy Mattress", icon: "🛏️" },
   { name: "Hot & Cold Water Service", icon: "🚿" },
   { name: "Attached Washroom", icon: "🚽" }
@@ -39,7 +38,16 @@ const Accommodations = () => {
       try {
         setLoading(true);
         const data = await getAllAccommodations();
-        setAccommodations(data);
+        
+        // Sort accommodations by code
+        const sortedData = [...data].sort((a, b) => {
+          // Extract numbers from codes (e.g., "TSL1" -> 1)
+          const aNum = parseInt(a.code.replace(/\D/g, ''));
+          const bNum = parseInt(b.code.replace(/\D/g, ''));
+          return aNum - bNum;
+        });
+        
+        setAccommodations(sortedData);
       } catch (error) {
         console.error('Error fetching accommodations:', error);
         toast({

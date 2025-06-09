@@ -8,7 +8,7 @@ import { useToast } from '@/components/ui/use-toast';
 
 const roomAmenities = [
   { name: "Spacious Wardrobe & Extra Storage Space", icon: "📦" },
-  { name: "AC & NON AC Rooms", icon: "❄️" },
+  { name: "AC Rooms", icon: "❄️" },
   { name: "Bed With Comfy Mattress", icon: "🛏️" },
   { name: "Hot & Cold Water Service", icon: "🚿" },
   { name: "Attached Washroom", icon: "🚽" }
