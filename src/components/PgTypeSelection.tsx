@@ -18,8 +18,8 @@ const PgTypeSelection = ({ type, triggerElement }: PgTypeSelectionProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
   
-  const handleSelection = (id: string) => {
-    navigate(`/accommodations/${id}`);
+  const handleSelection = (slug: string) => {
+    navigate(`/accommodations/${slug}`);
     setIsOpen(false);
   };
 
@@ -78,7 +78,7 @@ const PgTypeSelection = ({ type, triggerElement }: PgTypeSelectionProps) => {
             accommodations.map((accommodation) => (
             <div 
                 key={accommodation.id}
-                onClick={() => handleSelection(accommodation.id)}
+                onClick={() => handleSelection(accommodation.slug)}
               className="px-4 py-3 hover:bg-gray-50 cursor-pointer"
             >
                 <h3 className="font-medium text-skyliving-600"><span className="font-bold mr-2">{accommodation.code}</span>{accommodation.name}</h3>

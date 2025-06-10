@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { MapPin, Phone, Mail } from 'lucide-react';
+import { MapPin, Phone, Mail, ExternalLink } from 'lucide-react';
 import { Accommodation } from '@/types/accommodation';
 import { getAccommodationsByGender } from '@/services/accommodationService';
 import { useToast } from '@/components/ui/use-toast';
@@ -104,7 +104,19 @@ const GirlsAccommodations = () => {
                       <div className="space-y-3 mb-6">
                         <div className="flex items-start">
                           <MapPin className="h-5 w-5 mr-2 text-skyliving-600 mt-0.5" />
-                          <span className="text-gray-700">{accommodation.address}</span>
+                          <div className="flex-1">
+                            <span className="text-gray-700">{accommodation.address}</span>
+                            {accommodation.maps_link && (
+                              <a
+                                href={accommodation.maps_link}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="ml-2 inline-flex items-center text-skyliving-600 hover:text-skyliving-700 text-sm font-medium"
+                              >
+                                Open Maps <ExternalLink className="h-4 w-4 ml-1" />
+                              </a>
+                            )}
+                          </div>
                         </div>
                         <div className="flex items-center">
                           <Phone className="h-5 w-5 mr-2 text-skyliving-600" />
@@ -117,7 +129,7 @@ const GirlsAccommodations = () => {
                       </div>
                       
                       <Button asChild className="bg-skyliving-600 hover:bg-skyliving-700">
-                        <Link to={`/accommodations/${accommodation.id}`}>View Details</Link>
+                        <Link to={`/accommodations/${accommodation.slug}`}>View Details</Link>
                       </Button>
                     </div>
                   </div>

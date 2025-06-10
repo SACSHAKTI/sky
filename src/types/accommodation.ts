@@ -2,12 +2,14 @@ export interface Accommodation {
   id: string;
   name: string;
   code: string;
+  slug: string;
   description: string;
   address: string;
   contact: string;
   email: string;
   features: string[];
   main_image: string;
+  maps_link?: string;
   created_at: string;
   updated_at: string;
   pg_category?: 'boys' | 'girls' | 'mixed' | null;

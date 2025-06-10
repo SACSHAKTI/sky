@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { 
   MapPin, 
   Phone, 
   Mail, 
-  ArrowLeft
+  ArrowLeft,
+  ExternalLink
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Accommodation, AccommodationImage, RoomType } from '@/types/accommodation';
-import { getAccommodationById, getAccommodationImages, getRoomTypes } from '@/services/accommodationService';
+import { getAccommodationBySlug, getAccommodationImages, getRoomTypes } from '@/services/accommodationService';
 import { useToast } from '@/components/ui/use-toast';
 
 const roomAmenities = [
@@ -32,31 +33,33 @@ const commonAmenities = [
 ];
 
 const AccommodationDetail = () => {
-  const { id } = useParams<{ id: string }>();
+  const { slug } = useParams<{ slug: string }>();
   const [accommodation, setAccommodation] = useState<Accommodation | null>(null);
   const [images, setImages] = useState<AccommodationImage[]>([]);
   const [roomTypes, setRoomTypes] = useState<RoomType[]>([]);
   const [activeImage, setActiveImage] = useState('');
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     window.scrollTo(0, 0);
     
     const fetchAccommodationDetails = async () => {
-      if (!id) return;
+      if (!slug) return;
       
       try {
         setLoading(true);
         
         // Fetch accommodation data
-        const accommodationData = await getAccommodationById(id);
+        const accommodationData = await getAccommodationBySlug(slug);
         if (!accommodationData) {
           toast({
             title: "Error",
-            description: "Accommodation not found",
+            description: "Accommodation not found.",
             variant: "destructive"
           });
+          navigate('/accommodations');
           return;
         }
         
@@ -65,11 +68,11 @@ const AccommodationDetail = () => {
         document.title = `${accommodationData.name} | The Sky Living`;
         
         // Fetch accommodation images
-        const imagesData = await getAccommodationImages(id);
+        const [imagesData, roomTypesData] = await Promise.all([
+          getAccommodationImages(accommodationData.id),
+          getRoomTypes(accommodationData.id)
+        ]);
         setImages(imagesData);
-        
-        // Fetch room types
-        const roomTypesData = await getRoomTypes(id);
         setRoomTypes(roomTypesData);
       } catch (error) {
         console.error('Error fetching accommodation details:', error);
@@ -84,7 +87,7 @@ const AccommodationDetail = () => {
     };
 
     fetchAccommodationDetails();
-  }, [id, toast]);
+  }, [slug, toast, navigate]);
 
   if (loading) {
     return (
@@ -111,7 +114,7 @@ const AccommodationDetail = () => {
   }
 
   // Use main image if no gallery images are available
-  const galleryImages = images.length > 0 ? images : [{ id: 'main', accommodation_id: id || '', image_url: accommodation.main_image, alt_text: accommodation.name, sort_order: 0, created_at: '' }];
+  const galleryImages = images.length > 0 ? images : [{ id: 'main', accommodation_id: accommodation.id || '', image_url: accommodation.main_image, alt_text: accommodation.name, sort_order: 0, created_at: '' }];
 
   return (
     <div className="pt-32 pb-20 bg-white">
@@ -179,29 +182,39 @@ const AccommodationDetail = () => {
               <h2 className="text-2xl font-bold text-skyliving-700 mb-4">About This Accommodation</h2>
               <p className="text-gray-700 leading-relaxed mb-6">{accommodation.description}</p>
               
-              <div className="space-y-4">
-                <div className="flex items-start">
-                  <MapPin className="h-5 w-5 mr-3 text-skyliving-600 mt-1" />
-                  <div>
-                    <h3 className="font-medium text-gray-900">Address</h3>
-                    <p className="text-gray-700">{accommodation.address}</p>
+              <div className="space-y-4 mb-8">
+                <div className="flex flex-col">
+                  <div className="flex items-start">
+                    <MapPin className="h-6 w-6 mr-3 text-skyliving-600 mt-0.5" />
+                    <div className="flex-1">
+                      <span className="text-gray-700 text-lg">{accommodation.address}</span>
+                    </div>
+                  </div>
+                  <div className="mt-3 ml-9">
+                    <Button
+                      asChild
+                      className="bg-skyliving-600 hover:bg-skyliving-700 text-white w-full sm:w-auto"
+                    >
+                      <a
+                        href={accommodation.maps_link || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(accommodation.address)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-center gap-2"
+                      >
+                        <MapPin className="h-4 w-4" />
+                        Open in Google Maps
+                        <ExternalLink className="h-4 w-4" />
+                      </a>
+                    </Button>
                   </div>
                 </div>
-                
-                <div className="flex items-start">
-                  <Phone className="h-5 w-5 mr-3 text-skyliving-600 mt-1" />
-                  <div>
-                    <h3 className="font-medium text-gray-900">Contact</h3>
-                    <p className="text-gray-700">{accommodation.contact}</p>
-                  </div>
+                <div className="flex items-center">
+                  <Phone className="h-6 w-6 mr-3 text-skyliving-600" />
+                  <span className="text-gray-700 text-lg">{accommodation.contact}</span>
                 </div>
-                
-                <div className="flex items-start">
-                  <Mail className="h-5 w-5 mr-3 text-skyliving-600 mt-1" />
-                  <div>
-                    <h3 className="font-medium text-gray-900">Email</h3>
-                    <p className="text-gray-700">{accommodation.email}</p>
-                  </div>
+                <div className="flex items-center">
+                  <Mail className="h-6 w-6 mr-3 text-skyliving-600" />
+                  <span className="text-gray-700 text-lg">{accommodation.email}</span>
                 </div>
               </div>
             </div>

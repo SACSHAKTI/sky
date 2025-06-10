@@ -1,18 +1,30 @@
 import { supabase } from "@/integrations/supabase/client";
 import { Accommodation, AccommodationImage, RoomType } from "@/types/accommodation";
 
+// Helper function to generate slug from name
+function generateSlug(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+}
+
 export async function getAllAccommodations(): Promise<Accommodation[]> {
   const { data, error } = await supabase
     .from('accommodations')
     .select('*')
-    .order('name');
+    .order('code');
   
   if (error) {
     console.error('Error fetching accommodations:', error);
     return [];
   }
   
-  return data || [];
+  // Add slugs to accommodations
+  return (data || []).map(acc => ({
+    ...acc,
+    slug: generateSlug(acc.name)
+  }));
 }
 
 export async function getAccommodationsByGender(gender: 'boys' | 'girls' | 'mixed'): Promise<Accommodation[]> {
@@ -27,7 +39,34 @@ export async function getAccommodationsByGender(gender: 'boys' | 'girls' | 'mixe
     return [];
   }
   
-  return data || [];
+  // Add slugs to accommodations
+  return (data || []).map(acc => ({
+    ...acc,
+    slug: generateSlug(acc.name)
+  }));
+}
+
+export async function getAccommodationBySlug(slug: string): Promise<Accommodation | null> {
+  const { data, error } = await supabase
+    .from('accommodations')
+    .select('*');
+  
+  if (error) {
+    console.error('Error fetching accommodation by slug:', error);
+    return null;
+  }
+
+  // Find the accommodation with matching slug
+  const accommodation = (data || []).find(acc => generateSlug(acc.name) === slug);
+  
+  if (!accommodation) {
+    return null;
+  }
+
+  return {
+    ...accommodation,
+    slug: generateSlug(accommodation.name)
+  };
 }
 
 export async function getAccommodationById(id: string): Promise<Accommodation | null> {
@@ -42,7 +81,14 @@ export async function getAccommodationById(id: string): Promise<Accommodation | 
     return null;
   }
   
-  return data;
+  if (!data) {
+    return null;
+  }
+
+  return {
+    ...data,
+    slug: generateSlug(data.name)
+  };
 }
 
 export async function getAccommodationImages(accommodationId: string): Promise<AccommodationImage[]> {

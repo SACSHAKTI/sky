@@ -90,7 +90,7 @@ const Footer = () => {
                 {boysPGs.map(pg => (
                   <li key={pg.id} className="flex items-center">
                     <span className="font-bold mr-2 text-xs text-white/80 min-w-[40px]">{pg.code}</span>
-                    <Link to={`/accommodations/${pg.id}`} className="text-white/90 hover:text-white font-medium transition-colors">
+                    <Link to={`/accommodations/${pg.slug}`} className="text-white/90 hover:text-white font-medium transition-colors">
                       {pg.name}
                     </Link>
                   </li>
@@ -104,7 +104,7 @@ const Footer = () => {
                 {girlsPGs.map(pg => (
                   <li key={pg.id} className="flex items-center">
                     <span className="font-bold mr-2 text-xs text-white/80 min-w-[40px]">{pg.code}</span>
-                    <Link to={`/accommodations/${pg.id}`} className="text-white/90 hover:text-white font-medium transition-colors">
+                    <Link to={`/accommodations/${pg.slug}`} className="text-white/90 hover:text-white font-medium transition-colors">
                       {pg.name}
                     </Link>
                   </li>
