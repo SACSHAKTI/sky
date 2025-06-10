@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Accommodation } from '@/types/accommodation';
 import { getAllAccommodations } from '@/services/accommodationService';
 import { useToast } from '@/components/ui/use-toast';
+import { MapPin } from 'lucide-react';
 
 const Hostels = () => {
   const [hostels, setHostels] = useState<Accommodation[]>([]);
@@ -65,7 +66,7 @@ const Hostels = () => {
               })
               .map((hostel) => (
                 <Link 
-                  to={`/accommodations/${hostel.id}`} 
+                  to={`/accommodations/${hostel.slug}`} 
                   key={hostel.id}
                   className="group bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
                 >
@@ -79,17 +80,24 @@ const Hostels = () => {
                     </div>
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   </div>
-                  <div className="p-8">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-xl font-bold text-skyliving-700 group-hover:text-skyliving-600 transition-colors">{hostel.name}</h3>
-                      <span className="text-sm font-semibold text-skyliving-500 bg-skyliving-50 px-3 py-1 rounded-full">{hostel.code}</span>
+                  <div className="p-6">
+                    <h3 className="text-xl font-bold text-skyliving-700 mb-2">{hostel.name}</h3>
+                    <p className="text-skyliving-500 font-medium mb-3">({hostel.code})</p>
+                    <div className="flex items-start gap-2 text-gray-600 mb-4">
+                      <MapPin className="h-5 w-5 text-skyliving-600 shrink-0 mt-0.5" />
+                      <span className="text-sm">{hostel.address}</span>
                     </div>
-                    <p className="text-gray-600 mb-4">{hostel.description.substring(0, 100)}...</p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-skyliving-600 font-medium">View Details</span>
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-skyliving-600 group-hover:translate-x-2 transition-transform" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
-                      </svg>
+                    <div className="flex flex-wrap gap-2">
+                      {hostel.features.slice(0, 3).map((feature, index) => (
+                        <span key={index} className="bg-skyliving-50 text-skyliving-700 px-3 py-1 rounded-full text-sm">
+                          {feature}
+                        </span>
+                      ))}
+                      {hostel.features.length > 3 && (
+                        <span className="bg-skyliving-50 text-skyliving-700 px-3 py-1 rounded-full text-sm">
+                          +{hostel.features.length - 3} more
+                        </span>
+                      )}
                     </div>
                   </div>
                 </Link>
