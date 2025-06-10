@@ -84,7 +84,7 @@ const Gallery = () => {
       </section>
 
       {/* Gallery Section */}
-      <section className="py-20 bg-white">
+      <section className="py-12 md:py-20 bg-white">
         <div className="container mx-auto px-4">
           {loading ? (
             <div className="flex justify-center items-center h-64">
@@ -92,61 +92,108 @@ const Gallery = () => {
             </div>
           ) : (
             <>
-              {/* PG Names Row */}
-              <div className="flex justify-center mb-12 overflow-x-auto">
-                <div className="inline-flex gap-4 p-2" role="group">
-                  {accommodations.map((accommodation) => (
-                    <button
-                      key={accommodation.id}
-                      type="button"
-                      className={`px-6 py-3 text-base font-medium rounded-lg shadow-md transition-all ${
-                        activeCategory === accommodation.name
-                          ? "bg-skyliving-600 text-white shadow-skyliving-200"
-                          : "bg-white text-skyliving-600 hover:bg-skyliving-50"
-                      }`}
-                      onClick={() => setActiveCategory(accommodation.name)}
-                    >
-                      <span className="font-semibold">{accommodation.code}</span> - {accommodation.name}
-                    </button>
-                  ))}
+              {/* PG Names Navigation */}
+              <div className="mb-12">
+                {/* Mobile Dropdown for PG Selection (for very small screens) */}
+                <div className="block sm:hidden w-full">
+                  <select
+                    value={activeCategory}
+                    onChange={(e) => setActiveCategory(e.target.value)}
+                    className="w-full p-4 rounded-lg border border-gray-200 shadow-sm text-skyliving-600 font-medium focus:border-skyliving-500 focus:ring-2 focus:ring-skyliving-200"
+                  >
+                    {accommodations.map((accommodation) => (
+                      <option key={accommodation.id} value={accommodation.name}>
+                        {accommodation.code} - {accommodation.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Grid Layout for Tablet and Desktop */}
+                <div className="hidden sm:block">
+                  <div className="flex flex-col items-center">
+                    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 w-full max-w-6xl">
+                      {accommodations.map((accommodation) => (
+                        <button
+                          key={accommodation.id}
+                          type="button"
+                          className={`
+                            w-full px-4 py-3.5 text-base font-medium 
+                            rounded-lg shadow-md transition-all
+                            hover:transform hover:scale-105
+                            flex flex-col items-center justify-center
+                            min-h-[80px]
+                            ${
+                              activeCategory === accommodation.name
+                                ? "bg-skyliving-600 text-white shadow-skyliving-200"
+                                : "bg-white text-skyliving-600 hover:bg-skyliving-50 border border-skyliving-100"
+                            }
+                          `}
+                          onClick={() => setActiveCategory(accommodation.name)}
+                        >
+                          <span className="font-bold text-lg mb-1">{accommodation.code}</span>
+                          <span className="text-sm text-center">{accommodation.name}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
 
+              {/* Active PG Name Display */}
+              <div className="text-center mb-8">
+                <h2 className="text-2xl md:text-3xl font-bold text-skyliving-700">
+                  {accommodations.find(acc => acc.name === activeCategory)?.name}
+                </h2>
+              </div>
+
               {/* Gallery Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6">
                 {filteredImages.map((image) => (
                   <div 
                     key={image.id} 
-                    className="group overflow-hidden rounded-xl shadow-md cursor-pointer hover:shadow-xl transition-all duration-300 bg-white"
+                    className="group overflow-hidden rounded-xl shadow-md cursor-pointer 
+                             hover:shadow-xl transition-all duration-300 bg-white
+                             transform hover:scale-105"
                     onClick={() => handleImageClick(image)}
                   >
                     <div className="aspect-square overflow-hidden">
                       <img 
                         src={image.image_url}
                         alt={image.alt_text}
-                        className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110"
+                        className="w-full h-full object-cover transform transition-transform duration-700 
+                                 group-hover:scale-110"
+                        loading="lazy"
                       />
                     </div>
                   </div>
                 ))}
               </div>
+
+              {/* No Images Message */}
+              {filteredImages.length === 0 && (
+                <div className="text-center py-12">
+                  <p className="text-gray-500 text-lg">No images available for this accommodation.</p>
+                </div>
+              )}
             </>
           )}
         </div>
       </section>
 
-      {/* Image Modal */}
+      {/* Image Modal - Made more responsive */}
       {selectedImage && (
         <div className="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-          <div className="max-w-4xl w-full bg-white rounded-xl overflow-hidden shadow-2xl">
+          <div className="max-w-4xl w-full bg-white rounded-xl overflow-hidden shadow-2xl relative">
             <div className="relative">
               <img 
                 src={selectedImage.image_url} 
                 alt={selectedImage.alt_text} 
-                className="w-full h-auto"
+                className="w-full h-auto max-h-[80vh] object-contain"
               />
               <button 
-                className="absolute top-4 right-4 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100 transition"
+                className="absolute top-4 right-4 bg-white rounded-full p-2 shadow-lg 
+                         hover:bg-gray-100 transition transform hover:scale-110"
                 onClick={closeModal}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -155,8 +202,10 @@ const Gallery = () => {
               </button>
             </div>
             {selectedImage.accommodations?.name && (
-              <div className="p-4 text-center">
-                <h3 className="text-xl font-semibold text-skyliving-600">{selectedImage.accommodations.name}</h3>
+              <div className="p-4 text-center bg-white">
+                <h3 className="text-xl font-semibold text-skyliving-600">
+                  {selectedImage.accommodations.name}
+                </h3>
               </div>
             )}
           </div>
