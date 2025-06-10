@@ -1,7 +1,6 @@
-
 import React, { useEffect, useState } from 'react';
-import { getAllGalleryImages } from '@/services/accommodationService';
-import { AccommodationImage } from '@/types/accommodation';
+import { getAllGalleryImages, getAllAccommodations } from '@/services/accommodationService';
+import { AccommodationImage, Accommodation } from '@/types/accommodation';
 import { useToast } from '@/components/ui/use-toast';
 
 type GalleryImage = AccommodationImage & {
@@ -12,6 +11,7 @@ type GalleryImage = AccommodationImage & {
 
 const Gallery = () => {
   const [images, setImages] = useState<GalleryImage[]>([]);
+  const [accommodations, setAccommodations] = useState<Accommodation[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
   const [activeCategory, setActiveCategory] = useState('all');
@@ -21,16 +21,32 @@ const Gallery = () => {
     window.scrollTo(0, 0);
     document.title = 'Gallery | The Sky Living';
     
-    const fetchGalleryImages = async () => {
+    const fetchData = async () => {
       try {
         setLoading(true);
-        const data = await getAllGalleryImages() as GalleryImage[];
-        setImages(data);
+        const [galleryData, accommodationsData] = await Promise.all([
+          getAllGalleryImages() as Promise<GalleryImage[]>,
+          getAllAccommodations()
+        ]);
+        
+        // Sort accommodations by code
+        const sortedAccommodations = [...accommodationsData].sort((a, b) => {
+          const aNum = parseInt(a.code.replace(/\D/g, ''));
+          const bNum = parseInt(b.code.replace(/\D/g, ''));
+          return aNum - bNum;
+        });
+        
+        setImages(galleryData);
+        setAccommodations(sortedAccommodations);
+        // Set the first accommodation as active by default
+        if (sortedAccommodations.length > 0) {
+          setActiveCategory(sortedAccommodations[0].name);
+        }
       } catch (error) {
-        console.error('Error fetching gallery images:', error);
+        console.error('Error fetching data:', error);
         toast({
           title: "Error",
-          description: "Failed to load gallery images. Please try again later.",
+          description: "Failed to load gallery data. Please try again later.",
           variant: "destructive"
         });
       } finally {
@@ -38,18 +54,8 @@ const Gallery = () => {
       }
     };
 
-    fetchGalleryImages();
+    fetchData();
   }, [toast]);
-
-  const getUniqueAccommodations = () => {
-    const uniqueAccommodations = new Set<string>();
-    images.forEach(image => {
-      if (image.accommodations?.name) {
-        uniqueAccommodations.add(image.accommodations.name);
-      }
-    });
-    return Array.from(uniqueAccommodations);
-  };
 
   const filteredImages = activeCategory === 'all' 
     ? images 
@@ -70,9 +76,9 @@ const Gallery = () => {
         <div className="page-hero-overlay"></div>
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1555854877-bab0e564b8d5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')] bg-cover bg-center opacity-10 z-[-1]"></div>
         <div className="container mx-auto px-4 z-10 text-center page-hero-content">
-          <h1 className="page-hero-title text-gradient">GALLERY</h1>
+          <h1 className="page-hero-title text-gradient">OUR PG/HOSTELS GALLERY</h1>
           <p className="page-hero-subtitle">
-            Take a visual tour of our premium PG and hostel accommodations.
+            Browse through our collection of PG accommodations and their facilities
           </p>
         </div>
       </section>
@@ -86,54 +92,40 @@ const Gallery = () => {
             </div>
           ) : (
             <>
-              {/* Category Tabs */}
+              {/* PG Names Row */}
               <div className="flex justify-center mb-12 overflow-x-auto">
-                <div className="inline-flex rounded-md overflow-hidden shadow-md" role="group">
-                  <button
-                    type="button"
-                    className={`px-6 py-3 text-base font-medium focus:outline-none transition-colors ${
-                      activeCategory === 'all'
-                        ? "bg-skyliving-600 text-white"
-                        : "bg-white text-skyliving-600 hover:bg-skyliving-50"
-                    }`}
-                    onClick={() => setActiveCategory('all')}
-                  >
-                    All
-                  </button>
-                  {getUniqueAccommodations().map((accommodation) => (
+                <div className="inline-flex gap-4 p-2" role="group">
+                  {accommodations.map((accommodation) => (
                     <button
-                      key={accommodation}
+                      key={accommodation.id}
                       type="button"
-                      className={`px-6 py-3 text-base font-medium focus:outline-none transition-colors ${
-                        activeCategory === accommodation
-                          ? "bg-skyliving-600 text-white"
+                      className={`px-6 py-3 text-base font-medium rounded-lg shadow-md transition-all ${
+                        activeCategory === accommodation.name
+                          ? "bg-skyliving-600 text-white shadow-skyliving-200"
                           : "bg-white text-skyliving-600 hover:bg-skyliving-50"
                       }`}
-                      onClick={() => setActiveCategory(accommodation)}
+                      onClick={() => setActiveCategory(accommodation.name)}
                     >
-                      {accommodation}
+                      <span className="font-semibold">{accommodation.code}</span> - {accommodation.name}
                     </button>
                   ))}
                 </div>
               </div>
 
               {/* Gallery Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {filteredImages.map((image) => (
                   <div 
                     key={image.id} 
-                    className="group overflow-hidden rounded-xl shadow-md cursor-pointer hover:shadow-xl transition-all duration-300 bg-white card-hover"
+                    className="group overflow-hidden rounded-xl shadow-md cursor-pointer hover:shadow-xl transition-all duration-300 bg-white"
                     onClick={() => handleImageClick(image)}
                   >
-                    <div className="aspect-[4/3] overflow-hidden">
+                    <div className="aspect-square overflow-hidden">
                       <img 
                         src={image.image_url}
                         alt={image.alt_text}
                         className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110"
                       />
-                    </div>
-                    <div className="p-4">
-                      <h3 className="font-medium text-skyliving-600">{image.alt_text}</h3>
                     </div>
                   </div>
                 ))}
@@ -162,12 +154,11 @@ const Gallery = () => {
                 </svg>
               </button>
             </div>
-            <div className="p-6">
-              <h3 className="text-xl font-semibold text-skyliving-600">{selectedImage.alt_text}</h3>
-              {selectedImage.accommodations?.name && (
-                <p className="text-gray-600">{selectedImage.accommodations.name}</p>
-              )}
-            </div>
+            {selectedImage.accommodations?.name && (
+              <div className="p-4 text-center">
+                <h3 className="text-xl font-semibold text-skyliving-600">{selectedImage.accommodations.name}</h3>
+              </div>
+            )}
           </div>
         </div>
       )}
