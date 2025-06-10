@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { 
   MapPin, 
   Phone, 
   Mail, 
   ArrowLeft,
-  ExternalLink
+  ExternalLink,
+  Download
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Accommodation, AccommodationImage, RoomType } from '@/types/accommodation';
 import { getAccommodationBySlug, getAccommodationImages, getRoomTypes } from '@/services/accommodationService';
 import { useToast } from '@/components/ui/use-toast';
+import { useMetaTags } from '@/hooks/useMetaTags';
 
 const roomAmenities = [
   { name: "Spacious Wardrobe & Extra Storage Space", icon: "📦" },
@@ -32,6 +34,9 @@ const commonAmenities = [
   { name: "Parking", icon: "🅿️" }
 ];
 
+// Default brochure URL if none is provided
+const DEFAULT_BROCHURE_URL = 'https://theskyliving.co.in/brochures/skyliving-brochure.pdf';
+
 const AccommodationDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const [accommodation, setAccommodation] = useState<Accommodation | null>(null);
@@ -41,6 +46,20 @@ const AccommodationDetail = () => {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Get the current full URL
+  const currentUrl = typeof window !== 'undefined' 
+    ? `${window.location.origin}${location.pathname}`
+    : '';
+
+  // Use the meta tags hook when accommodation data is available
+  useMetaTags({
+    title: accommodation ? `${accommodation.name} | The Sky Living` : 'The Sky Living',
+    description: accommodation?.description || 'Experience premium student living at The Sky Living PG and Hostel accommodations.',
+    image: accommodation?.main_image || '',
+    url: currentUrl
+  });
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -65,7 +84,6 @@ const AccommodationDetail = () => {
         
         setAccommodation(accommodationData);
         setActiveImage(accommodationData.main_image);
-        document.title = `${accommodationData.name} | The Sky Living`;
         
         // Fetch accommodation images
         const [imagesData, roomTypesData] = await Promise.all([
@@ -294,9 +312,26 @@ const AccommodationDetail = () => {
                 <div className="p-6 border-b border-gray-100">
                   <h3 className="text-xl font-bold text-skyliving-700 mb-2">Interested in this accommodation?</h3>
                   <p className="text-gray-600 mb-4">Contact us to schedule a visit or book your spot.</p>
-                  <Button className="w-full bg-skyliving-600 hover:bg-skyliving-700 text-white" size="lg" asChild>
-                    <Link to="/contact">Contact Us</Link>
-                  </Button>
+                  <div className="space-y-3">
+                    <Button className="w-full bg-skyliving-600 hover:bg-skyliving-700 text-white" size="lg" asChild>
+                      <Link to="/contact">Contact Us</Link>
+                    </Button>
+                    <Button 
+                      className="w-full bg-white border-2 border-skyliving-600 text-skyliving-700 hover:bg-skyliving-50" 
+                      size="lg" 
+                      asChild
+                    >
+                      <a 
+                        href={accommodation.brochure_link || DEFAULT_BROCHURE_URL} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-center gap-2"
+                      >
+                        <Download className="h-4 w-4" />
+                        Download Brochure
+                      </a>
+                    </Button>
+                  </div>
                 </div>
                 <div className="p-6">
                   <h4 className="font-medium text-gray-900 mb-3">Quick Contact</h4>

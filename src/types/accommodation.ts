@@ -10,6 +10,7 @@ export interface Accommodation {
   features: string[];
   main_image: string;
   maps_link?: string;
+  brochure_link?: string;
   created_at: string;
   updated_at: string;
   pg_category?: 'boys' | 'girls' | 'mixed' | null;

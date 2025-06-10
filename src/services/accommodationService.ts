@@ -20,10 +20,11 @@ export async function getAllAccommodations(): Promise<Accommodation[]> {
     return [];
   }
   
-  // Add slugs to accommodations
+  // Add slugs to accommodations and ensure brochure_link is included
   return (data || []).map(acc => ({
     ...acc,
-    slug: generateSlug(acc.name)
+    slug: generateSlug(acc.name),
+    brochure_link: acc.brochure_link || null
   }));
 }
 
@@ -39,10 +40,11 @@ export async function getAccommodationsByGender(gender: 'boys' | 'girls' | 'mixe
     return [];
   }
   
-  // Add slugs to accommodations
+  // Add slugs to accommodations and ensure brochure_link is included
   return (data || []).map(acc => ({
     ...acc,
-    slug: generateSlug(acc.name)
+    slug: generateSlug(acc.name),
+    brochure_link: acc.brochure_link || null
   }));
 }
 
@@ -65,7 +67,8 @@ export async function getAccommodationBySlug(slug: string): Promise<Accommodatio
 
   return {
     ...accommodation,
-    slug: generateSlug(accommodation.name)
+    slug: generateSlug(accommodation.name),
+    brochure_link: accommodation.brochure_link || null
   };
 }
 
@@ -87,7 +90,8 @@ export async function getAccommodationById(id: string): Promise<Accommodation | 
 
   return {
     ...data,
-    slug: generateSlug(data.name)
+    slug: generateSlug(data.name),
+    brochure_link: data.brochure_link || null
   };
 }
 
