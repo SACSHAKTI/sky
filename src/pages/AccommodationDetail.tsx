@@ -210,7 +210,12 @@ const AccommodationDetail = () => {
                 </div>
                 <div className="flex items-center">
                   <Phone className="h-6 w-6 mr-3 text-skyliving-600" />
-                  <span className="text-gray-700 text-lg">{accommodation.contact}</span>
+                  <a 
+                    href={`tel:${accommodation.contact}`}
+                    className="text-gray-700 text-lg hover:text-skyliving-600 transition-colors"
+                  >
+                    {accommodation.contact}
+                  </a>
                 </div>
                 <div className="flex items-center">
                   <Mail className="h-6 w-6 mr-3 text-skyliving-600" />
@@ -298,7 +303,12 @@ const AccommodationDetail = () => {
                   <div className="space-y-3">
                     <div className="flex items-center">
                       <Phone className="h-4 w-4 mr-2 text-skyliving-600" />
-                      <span className="text-gray-700 text-sm">{accommodation.contact}</span>
+                      <a 
+                        href={`tel:${accommodation.contact}`}
+                        className="text-gray-700 text-sm hover:text-skyliving-600 transition-colors"
+                      >
+                        {accommodation.contact}
+                      </a>
                     </div>
                     <div className="flex items-center">
                       <Mail className="h-4 w-4 mr-2 text-skyliving-600" />
