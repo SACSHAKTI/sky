@@ -96,10 +96,14 @@ const Gallery = () => {
               <div className="mb-12">
                 {/* Mobile Dropdown for PG Selection (for very small screens) */}
                 <div className="block sm:hidden w-full">
-                  <select
-                    value={activeCategory}
-                    onChange={(e) => setActiveCategory(e.target.value)}
-                    className="w-full p-4 rounded-lg border border-gray-200 shadow-sm text-skyliving-600 font-medium focus:border-skyliving-500 focus:ring-2 focus:ring-skyliving-200"
+                  <label htmlFor="pg-select" className="sr-only">
+                    Select accommodation
+                  </label>
+                   <select
+                    id="pg-select"
+                     value={activeCategory}
+                     onChange={(e) => setActiveCategory(e.target.value)}
+                     className="w-full p-4 rounded-lg border border-gray-200 shadow-sm text-skyliving-600 font-medium focus:border-skyliving-500 focus:ring-2 focus:ring-skyliving-200"
                   >
                     {accommodations.map((accommodation) => (
                       <option key={accommodation.id} value={accommodation.name}>

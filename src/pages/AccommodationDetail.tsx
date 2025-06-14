@@ -322,10 +322,14 @@ const AccommodationDetail = () => {
                       asChild
                     >
                       <a 
-                        href={accommodation.brochure_link || DEFAULT_BROCHURE_URL} 
+                        href={accommodation.brochure_link && accommodation.brochure_link.trim() !== '' ? accommodation.brochure_link : DEFAULT_BROCHURE_URL} 
                         target="_blank" 
                         rel="noopener noreferrer"
                         className="flex items-center justify-center gap-2"
+                        onClick={() => {
+                          console.log('Brochure link clicked:', accommodation.brochure_link);
+                          console.log('Using URL:', accommodation.brochure_link && accommodation.brochure_link.trim() !== '' ? accommodation.brochure_link : DEFAULT_BROCHURE_URL);
+                        }}
                       >
                         <Download className="h-4 w-4" />
                         Download Brochure
