@@ -37,6 +37,17 @@ const commonAmenities = [
 // Default brochure URL if none is provided
 const DEFAULT_BROCHURE_URL = 'https://theskyliving.co.in/brochures/skyliving-brochure.pdf';
 
+// Add room sharing mapping based on TSL codes
+const roomSharingOptions = {
+  'TSL 1': ['2 Sharing', '3 Sharing', '4 Sharing'],
+  'TSL 2': ['2 Sharing', '3 Sharing', '4 Sharing'],
+  'TSL 3': ['2 Sharing', '3 Sharing', '4 Sharing'],
+  'TSL 4': ['2 Sharing', '3 Sharing', '4 Sharing'],
+  'TSL 6': ['4 Sharing', '5 Sharing', '6 Sharing'],
+  'TSL 7': ['3 Sharing', '4 Sharing'],
+  'TSL 8': ['3 Sharing', '4 Sharing'],
+};
+
 const AccommodationDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const [accommodation, setAccommodation] = useState<Accommodation | null>(null);
@@ -244,32 +255,22 @@ const AccommodationDetail = () => {
 
             {/* Room Types */}
             <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100 mb-8">
-              <h2 className="text-2xl font-bold text-skyliving-700 mb-6">Room Types & Pricing</h2>
+              <h2 className="text-2xl font-bold text-skyliving-700 mb-6">Available Room Types</h2>
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead>
                     <tr>
                       <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 bg-gray-50">Room Type</th>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 bg-gray-50">Monthly Rent</th>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 bg-gray-50">Availability</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 bg-gray-50">Status</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {roomTypes.map((room, index) => (
-                      <tr key={room.id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                        <td className="px-4 py-4 text-sm text-gray-900">{room.type}</td>
-                        <td className="px-4 py-4 text-sm text-gray-900 font-medium">₹{room.price.toLocaleString()}/month</td>
+                    {roomSharingOptions[accommodation.code as keyof typeof roomSharingOptions]?.map((roomType, index) => (
+                      <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                        <td className="px-4 py-4 text-sm text-gray-900">{roomType}</td>
                         <td className="px-4 py-4 text-sm">
-                          <span 
-                            className={`inline-flex px-2.5 py-1 rounded-full text-xs font-medium ${
-                              room.availability === 'Available' 
-                                ? 'bg-green-50 text-green-700' 
-                                : room.availability === 'Limited' 
-                                  ? 'bg-yellow-50 text-yellow-700'
-                                  : 'bg-red-50 text-red-700'
-                            }`}
-                          >
-                            {room.availability}
+                          <span className="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700">
+                            Available
                           </span>
                         </td>
                       </tr>
