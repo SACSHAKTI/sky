@@ -18,6 +18,11 @@ export class SitemapGenerator {
     { url: '/girls-accommodations', changefreq: 'weekly', priority: 0.9 },
     { url: '/gallery', changefreq: 'weekly', priority: 0.7 },
     { url: '/contact', changefreq: 'monthly', priority: 0.8 },
+    { url: '/navrangpura-pg-accommodation', changefreq: 'weekly', priority: 0.9 },
+    { url: '/vaishnodevi-circle-student-housing', changefreq: 'weekly', priority: 0.9 },
+    { url: '/pg-near-st-xaviers-college', changefreq: 'weekly', priority: 0.9 },
+    { url: '/student-accommodation-gls-university', changefreq: 'weekly', priority: 0.9 },
+    { url: '/pg-near-nirma-university', changefreq: 'weekly', priority: 0.9 },
   ];
 
   async generateSitemap(): Promise<string> {

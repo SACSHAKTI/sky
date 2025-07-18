@@ -15,6 +15,7 @@ import { getAccommodationBySlug, getAccommodationImages, getRoomTypes } from '@/
 import { useToast } from '@/components/ui/use-toast';
 import { useMetaTags } from '@/hooks/useMetaTags';
 import { StructuredData } from '@/components/seo/StructuredData';
+import { RelatedPages } from '@/components/seo/RelatedPages';
 
 const roomAmenities = [
   { name: "Spacious Wardrobe & Extra Storage Space", icon: "📦" },
@@ -100,10 +101,124 @@ const AccommodationDetail = () => {
     ? `${window.location.origin}${location.pathname}`
     : '';
 
+  // Generate location-specific SEO content
+  const getLocationSpecificContent = () => {
+    if (!accommodation) return { title: 'The Sky Living', description: 'Experience premium student living at The Sky Living PG and Hostel accommodations.' };
+    
+    const isNavrangpura = accommodation.code.match(/TSL[1-5]/);
+    const isVaishnodevi = accommodation.code.match(/TSL[7-9]/);
+    const isUvarsad = accommodation.code.match(/TSL6/);
+    
+    let locationKeywords = '';
+    let nearbyUniversities = '';
+    
+    if (isNavrangpura) {
+      locationKeywords = 'Navrangpura, near St. Xavier\'s College, GLS University, CG Road';
+      nearbyUniversities = 'Perfect for St. Xavier\'s College and GLS University students';
+    } else if (isVaishnodevi) {
+      locationKeywords = 'Vaishnodevi Circle, SG Highway, near Nirma University';
+      nearbyUniversities = 'Ideal for Nirma University and engineering students';
+    } else if (isUvarsad) {
+      locationKeywords = 'Uvarsad, near Karnavati University';
+      nearbyUniversities = 'Perfect for Karnavati University students';
+    }
+    
+    return {
+      title: `${accommodation.name} - Premium PG in ${locationKeywords} | The Sky Living`,
+      description: `${accommodation.description || ''} ${nearbyUniversities}. Premium student accommodation with AC rooms, food, Wi-Fi, and modern amenities in ${locationKeywords}.`.trim()
+    };
+  };
+
+  const { title, description } = getLocationSpecificContent();
+
+  // Generate related pages based on location
+  const getRelatedPages = () => {
+    if (!accommodation) return [];
+    
+    const isNavrangpura = accommodation.code.match(/TSL[1-5]/);
+    const isVaishnodevi = accommodation.code.match(/TSL[7-9]/);
+    const isUvarsad = accommodation.code.match(/TSL6/);
+    
+    const relatedPages = [];
+    
+    if (isNavrangpura) {
+      relatedPages.push(
+        {
+          title: "Navrangpura PG",
+          subtitle: "Premium location",
+          description: "Explore all PG options in Navrangpura, Ahmedabad's most sought-after area for students.",
+          link: "/navrangpura-pg-accommodation",
+          type: "location" as const
+        },
+        {
+          title: "St. Xavier's College PG",
+          subtitle: "2-minute walk",
+          description: "Premium PG accommodation just 2 minutes walk from St. Xavier's College campus.",
+          link: "/pg-near-st-xaviers-college",
+          type: "university" as const
+        },
+        {
+          title: "GLS University PG",
+          subtitle: "Law & Management",
+          description: "Perfect for GLS University students pursuing Law, Management, and Commerce programs.",
+          link: "/student-accommodation-gls-university",
+          type: "university" as const
+        }
+      );
+    } else if (isVaishnodevi) {
+      relatedPages.push(
+        {
+          title: "Vaishnodevi Circle PG",
+          subtitle: "SG Highway area",
+          description: "Modern student housing near Vaishnodevi Circle with excellent connectivity.",
+          link: "/vaishnodevi-circle-student-housing",
+          type: "location" as const
+        },
+        {
+          title: "Nirma University PG",
+          subtitle: "Tech-friendly",
+          description: "Perfect for Nirma University students with tech-friendly environment.",
+          link: "/pg-near-nirma-university",
+          type: "university" as const
+        }
+      );
+    } else if (isUvarsad) {
+      relatedPages.push(
+        {
+          title: "Uvarsad PG",
+          subtitle: "Peaceful environment",
+          description: "Serene PG accommodation in Uvarsad village - perfect for students seeking peaceful study environment.",
+          link: "/uvarsad-pg-accommodation",
+          type: "location" as const
+        },
+        {
+          title: "Karnavati University PG",
+          subtitle: "Design & Engineering",
+          description: "Peaceful accommodation for Karnavati University students in Uvarsad.",
+          link: "/karnavati-university-student-housing",
+          type: "university" as const
+        }
+      );
+    }
+    
+    // Add some general related pages
+    relatedPages.push(
+      {
+        title: "All Accommodations",
+        subtitle: "Browse all options",
+        description: "Explore all our premium PG accommodations across different locations.",
+        link: "/accommodations",
+        type: "location" as const
+      }
+    );
+    
+    return relatedPages.slice(0, 4); // Limit to 4 related pages
+  };
+
   // Use the meta tags hook when accommodation data is available
   useMetaTags({
-    title: accommodation ? `${accommodation.name} | The Sky Living` : 'The Sky Living',
-    description: accommodation?.description || 'Experience premium student living at The Sky Living PG and Hostel accommodations.',
+    title,
+    description,
     image: accommodation?.main_image || '',
     url: currentUrl,
     canonical: currentUrl
@@ -403,6 +518,13 @@ const AccommodationDetail = () => {
             </Card>
           </div>
         </div>
+        
+        {/* Related Pages Section */}
+        <RelatedPages
+          title="Explore Related Accommodations"
+          pages={getRelatedPages()}
+          className="bg-gray-50"
+        />
       </div>
     </div>
   );
