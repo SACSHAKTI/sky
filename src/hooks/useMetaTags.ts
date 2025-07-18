@@ -5,9 +5,10 @@ interface MetaTagsProps {
   description: string;
   image: string;
   url: string;
+  canonical?: string;
 }
 
-export const useMetaTags = ({ title, description, image, url }: MetaTagsProps) => {
+export const useMetaTags = ({ title, description, image, url, canonical }: MetaTagsProps) => {
   useEffect(() => {
     // Update title
     document.title = title;
@@ -47,6 +48,18 @@ export const useMetaTags = ({ title, description, image, url }: MetaTagsProps) =
       metaTag.setAttribute('content', content);
     });
 
+    // Handle canonical URL
+    const canonicalUrl = canonical || url;
+    let canonicalTag = document.querySelector('link[rel="canonical"]');
+    
+    if (!canonicalTag) {
+      canonicalTag = document.createElement('link');
+      canonicalTag.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonicalTag);
+    }
+    
+    canonicalTag.setAttribute('href', canonicalUrl);
+
     // Cleanup function to restore original meta tags
     return () => {
       Object.keys(metaTags).forEach((name) => {
@@ -56,6 +69,12 @@ export const useMetaTags = ({ title, description, image, url }: MetaTagsProps) =
           metaTag.remove();
         }
       });
+      
+      // Remove canonical tag
+      const canonicalToRemove = document.querySelector('link[rel="canonical"]');
+      if (canonicalToRemove) {
+        canonicalToRemove.remove();
+      }
     };
-  }, [title, description, image, url]);
+  }, [title, description, image, url, canonical]);
 }; 

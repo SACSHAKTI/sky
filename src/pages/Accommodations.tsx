@@ -5,6 +5,7 @@ import { MapPin, Phone, Mail, ExternalLink } from 'lucide-react';
 import { Accommodation } from '@/types/accommodation';
 import { getAllAccommodations } from '@/services/accommodationService';
 import { useToast } from '@/components/ui/use-toast';
+import { useMetaTags } from '@/hooks/useMetaTags';
 
 const roomAmenities = [
   { name: "Spacious Wardrobe & Extra Storage Space", icon: "📦" },
@@ -30,9 +31,15 @@ const Accommodations = () => {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
+  useMetaTags({
+    title: 'Our Accommodations | The Sky Living',
+    description: 'Discover premium PG and hostel accommodations in Ahmedabad. Fully furnished rooms with modern amenities near Navrangpura, Ahmedabad University, and CG Road. AC rooms, 24/7 security, food service, and more.',
+    image: 'https://lovable.dev/opengraph-image-p98pqg.png',
+    url: 'https://theskyliving.co.in/accommodations'
+  });
+
   useEffect(() => {
     window.scrollTo(0, 0);
-    document.title = 'Our Accommodations | The Sky Living';
     
     const fetchAccommodations = async () => {
       try {

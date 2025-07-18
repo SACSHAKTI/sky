@@ -14,6 +14,7 @@ import { Accommodation, AccommodationImage, RoomType } from '@/types/accommodati
 import { getAccommodationBySlug, getAccommodationImages, getRoomTypes } from '@/services/accommodationService';
 import { useToast } from '@/components/ui/use-toast';
 import { useMetaTags } from '@/hooks/useMetaTags';
+import { StructuredData } from '@/components/seo/StructuredData';
 
 const roomAmenities = [
   { name: "Spacious Wardrobe & Extra Storage Space", icon: "📦" },
@@ -59,6 +60,41 @@ const AccommodationDetail = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Helper function to transform accommodation data to structured data format
+  const getStructuredData = (accommodation: Accommodation, currentUrl: string) => {
+    // Parse address to extract components (basic parsing for Indian addresses)
+    const addressParts = accommodation.address.split(',').map(part => part.trim());
+    const streetAddress = addressParts[0] || accommodation.address;
+    const addressLocality = addressParts[1] || 'Bangalore';
+    const addressRegion = addressParts[2] || 'Karnataka';
+    const postalCode = addressParts[3] || '560001';
+    
+    // Combine all amenities for structured data
+    const allAmenities = [
+      ...accommodation.features,
+      ...roomAmenities.map(amenity => amenity.name),
+      ...commonAmenities.map(amenity => amenity.name)
+    ];
+
+    return {
+      name: accommodation.name,
+      description: accommodation.description,
+      image: accommodation.main_image,
+      address: {
+        streetAddress,
+        addressLocality,
+        addressRegion,
+        postalCode,
+        addressCountry: 'India'
+      },
+      telephone: accommodation.contact,
+      email: accommodation.email,
+      amenityFeature: allAmenities,
+      url: currentUrl,
+      priceRange: '₹₹'
+    };
+  };
+
   // Get the current full URL
   const currentUrl = typeof window !== 'undefined' 
     ? `${window.location.origin}${location.pathname}`
@@ -69,7 +105,8 @@ const AccommodationDetail = () => {
     title: accommodation ? `${accommodation.name} | The Sky Living` : 'The Sky Living',
     description: accommodation?.description || 'Experience premium student living at The Sky Living PG and Hostel accommodations.',
     image: accommodation?.main_image || '',
-    url: currentUrl
+    url: currentUrl,
+    canonical: currentUrl
   });
 
   useEffect(() => {
@@ -147,6 +184,12 @@ const AccommodationDetail = () => {
 
   return (
     <div className="pt-32 pb-20 bg-white">
+      {/* Structured Data for SEO */}
+      <StructuredData 
+        type="Accommodation" 
+        data={getStructuredData(accommodation, currentUrl)} 
+      />
+      
       <div className="container mx-auto px-4">
         {/* Back Button */}
         <div className="mb-6">

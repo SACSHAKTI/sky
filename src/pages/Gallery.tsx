@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { getAllGalleryImages, getAllAccommodations } from '@/services/accommodationService';
 import { AccommodationImage, Accommodation } from '@/types/accommodation';
 import { useToast } from '@/components/ui/use-toast';
+import { useMetaTags } from '@/hooks/useMetaTags';
 
 type GalleryImage = AccommodationImage & {
   accommodations: {
@@ -17,9 +18,15 @@ const Gallery = () => {
   const [activeCategory, setActiveCategory] = useState('all');
   const { toast } = useToast();
 
+  useMetaTags({
+    title: 'Gallery | The Sky Living - PG & Hostels in Ahmedabad',
+    description: 'Explore our premium PG and hostel accommodations in Ahmedabad through our gallery. View rooms, facilities, and amenities at The Sky Living near Navrangpura, Ahmedabad University, and CG Road.',
+    image: 'https://lovable.dev/opengraph-image-p98pqg.png',
+    url: 'https://theskyliving.co.in/gallery'
+  });
+
   useEffect(() => {
     window.scrollTo(0, 0);
-    document.title = 'Gallery | The Sky Living';
     
     const fetchData = async () => {
       try {

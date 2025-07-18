@@ -3,11 +3,18 @@ import React, { useEffect, useState } from 'react';
 import { toast } from '@/components/ui/use-toast';
 import { MapPin, Phone, Mail, Clock, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useMetaTags } from '@/hooks/useMetaTags';
 
 const ContactUs = () => {
+  useMetaTags({
+    title: 'Contact Us | The Sky Living - PG & Hostels in Ahmedabad',
+    description: 'Get in touch with The Sky Living for premium PG and hostel accommodations in Ahmedabad. Located near Navrangpura, Ahmedabad University, and CG Road. Call us for bookings and inquiries.',
+    image: 'https://lovable.dev/opengraph-image-p98pqg.png',
+    url: 'https://theskyliving.co.in/contact'
+  });
+
   useEffect(() => {
     window.scrollTo(0, 0);
-    document.title = 'Contact Us | The Sky Living';
   }, []);
 
   const [formData, setFormData] = useState({

@@ -5,6 +5,7 @@ import { MapPin, Phone, Mail, ExternalLink } from 'lucide-react';
 import { Accommodation } from '@/types/accommodation';
 import { getAccommodationsByGender } from '@/services/accommodationService';
 import { useToast } from '@/components/ui/use-toast';
+import { useMetaTags } from '@/hooks/useMetaTags';
 
 const roomAmenities = [
   { name: "Spacious Wardrobe & Extra Storage Space", icon: "📦" },
@@ -30,9 +31,15 @@ const GirlsAccommodations = () => {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
+  useMetaTags({
+    title: 'Girls PG/Hostels in Ahmedabad | The Sky Living',
+    description: 'Safe and secure Girls PG and hostels in Ahmedabad with AC rooms, 24/7 security, food service, and modern amenities. Located near Navrangpura, Ahmedabad University, and CG Road. Premium accommodation for female students.',
+    image: 'https://lovable.dev/opengraph-image-p98pqg.png',
+    url: 'https://theskyliving.co.in/girls-accommodations'
+  });
+
   useEffect(() => {
     window.scrollTo(0, 0);
-    document.title = 'Girls PG/Hostels | The Sky Living';
     
     const fetchAccommodations = async () => {
       try {

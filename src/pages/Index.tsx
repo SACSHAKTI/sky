@@ -9,6 +9,7 @@ import Testimonials from '../components/Testimonials';
 import InstagramFeed from '../components/InstagramFeed';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
+import { StructuredData } from '@/components/seo/StructuredData';
 
 const Index = () => {
   useEffect(() => {
@@ -16,8 +17,27 @@ const Index = () => {
     document.title = 'The Sky Living | Premium PG & Hostel Accommodations';
   }, []);
 
+  const businessData = {
+    name: 'The Sky Living',
+    description: 'Premium PG and hostel accommodation in Ahmedabad. The Sky Living offers fully furnished, affordable PG in Ahmedabad, Boys PG, Girls PG near Navrangpura, Ahmedabad University, and CG Road with modern amenities and community living.',
+    url: 'https://theskyliving.co.in',
+    telephone: '+91-9876543210',
+    email: 'info@theskyliving.co.in',
+    address: {
+      streetAddress: 'Navrangpura',
+      addressLocality: 'Ahmedabad',
+      addressRegion: 'Gujarat',
+      postalCode: '380009',
+      addressCountry: 'IN'
+    },
+    image: 'https://lovable.dev/opengraph-image-p98pqg.png',
+    priceRange: '₹₹',
+    openingHours: ['Mo-Su 00:00-23:59']
+  };
+
   return (
     <div className="bg-white">
+      <StructuredData type="LocalBusiness" data={businessData} />
       <Hero />
       <Stats />
       <LiveInStyle />

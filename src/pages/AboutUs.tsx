@@ -1,9 +1,16 @@
 import React, { useEffect } from 'react';
+import { useMetaTags } from '@/hooks/useMetaTags';
 
 const AboutUs = () => {
+  useMetaTags({
+    title: 'About Us | The Sky Living - Premium PG & Hostels in Ahmedabad',
+    description: 'Learn about The Sky Living - your trusted partner for premium PG and hostel accommodations in Ahmedabad. Discover our history, values, and commitment to providing exceptional student accommodation near Navrangpura and Ahmedabad University.',
+    image: 'https://lovable.dev/opengraph-image-p98pqg.png',
+    url: 'https://theskyliving.co.in/about'
+  });
+
   useEffect(() => {
     window.scrollTo(0, 0);
-    document.title = 'About Us | The Sky Living';
   }, []);
 
   return (
